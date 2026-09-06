@@ -7,7 +7,7 @@ import (
 
 func NewHTTP2() *http.HTTP2Config {
     return &http.HTTP2Config{
-        MaxConcurrentStreams: 250,
+        MaxConcurrentStreams:        250,
         StrictMaxConcurrentRequests: true,
 
         MaxDecoderHeaderTableSize: 4096,
@@ -15,11 +15,11 @@ func NewHTTP2() *http.HTTP2Config {
 
         // 1mb == 1 << 20
         MaxReceiveBufferPerConnection: 1 << 20,
-        MaxReceiveBufferPerStream: 1 << 20,
-        MaxReadFrameSize: 1 << 20,
+        MaxReceiveBufferPerStream:     1 << 20,
+        MaxReadFrameSize:              1 << 20,
 
         SendPingTimeout: 10 * time.Second,
-        PingTimeout: 15 * time.Second,
+        PingTimeout:     15 * time.Second,
 
         WriteByteTimeout: 30 * time.Second,
 
@@ -27,10 +27,10 @@ func NewHTTP2() *http.HTTP2Config {
 
         // nil
         // CountError: func(errType string) {
-            /*
-                Use configure
-                UnImplemented for this case
-            */
+        /*
+           Use configure
+           UnImplemented for this case
+        */
         // },
     }
 }
