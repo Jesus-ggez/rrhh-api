@@ -2,6 +2,22 @@ data: list[str] = []
 
 target: str = 'h2'
 with open(f'./{target}.stub.go', 'r') as s:
-    data = [i for i in s if not i.strip().startswith('//')]
+    is_tab: bool = False
+
+    for i in s:
+        i: str
+        if '.?' in i:
+            is_tab = not is_tab
+
+        if i.strip().startswith('//'):
+            continue
+
+        if is_tab and i.strip():
+            i = i[::-1]
+            ix: int = i.find(' ')
+            i = i[:ix + 1] + ':' + i[ix + 1:]
+            i = i[::-1].rstrip() + ','
+
+        data.append(i)
 
 with open(f'./{target}.h.go', 'w') as w: w.writelines(data)

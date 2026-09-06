@@ -75,22 +75,6 @@ func newServer() {
 
         // http/2 config
         HTTP2: &http.HTTP2Config{
-            /*
-    MaxConcurrentStreams int
-    StrictMaxConcurrentRequests bool
-    MaxDecoderHeaderTableSize int
-    MaxEncoderHeaderTableSize int
-    MaxReadFrameSize int
-    MaxReceiveBufferPerConnection int
-    MaxReceiveBufferPerStream int
-    SendPingTimeout time.Duration
-    PingTimeout time.Duration
-    WriteByteTimeout time.Duration
-    PermitProhibitedCipherSuites bool
-    CountError func(errType string)
-
-
-            */
         },
 
         // tls config
