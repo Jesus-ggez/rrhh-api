@@ -1,6 +1,7 @@
 package http // import "net/http"
 
 type HTTP2Config struct {
+
     MaxConcurrentStreams: int,
     StrictMaxConcurrentRequests: bool,
     MaxDecoderHeaderTableSize: int,
@@ -13,6 +14,7 @@ type HTTP2Config struct {
     WriteByteTimeout: time.Duration,
     PermitProhibitedCipherSuites: bool,
     CountError func(errType: string),
+
 }
     HTTP2Config defines HTTP/2 configuration parameters common to both Transport
     and Server.
