@@ -5,9 +5,9 @@ import "crypto/tls"
 func NewTLSConf() *tls.Config {
     return &tls.Config{
         /*
-           me da weba conigurar esto en ese momento
+            me da weba conigurar esto en ese momento
 
-           TODO: trace:x.?rdr.on
+            TODO: trace:x.?rdr.on
 
 
             Rand: io.Reader,
