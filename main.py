@@ -1,6 +1,6 @@
 data: list[str] = []
 
-target: str = 'h2'
+target: str = input('target of creation headers: ')
 with open(f'./{target}.stub.go', 'r') as s:
     is_tab: bool = False
 

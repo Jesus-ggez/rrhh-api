@@ -1,6 +1,9 @@
 package servo
 
-import "net/http"
+import (
+    "net/http"
+    "time"
+)
 
 func NewHTTP2() *http.HTTP2Config {
     return &http.HTTP2Config{
@@ -10,15 +13,24 @@ func NewHTTP2() *http.HTTP2Config {
         MaxDecoderHeaderTableSize: 4096,
         MaxEncoderHeaderTableSize: 4096,
 
-        MaxReadFrameSize: 1 << 20, // 1mb
-        /*
-        MaxReceiveBufferPerConnection: int,
-        MaxReceiveBufferPerStream: int,
-        SendPingTimeout: time.Duration,
-        PingTimeout: time.Duration,
-        WriteByteTimeout: time.Duration,
-        PermitProhibitedCipherSuites: bool,
-        CountError func(errType: string),
-        */
+        // 1mb == 1 << 20
+        MaxReceiveBufferPerConnection: 1 << 20,
+        MaxReceiveBufferPerStream: 1 << 20,
+        MaxReadFrameSize: 1 << 20,
+
+        SendPingTimeout: 10 * time.Second,
+        PingTimeout: 15 * time.Second,
+
+        WriteByteTimeout: 30 * time.Second,
+
+        PermitProhibitedCipherSuites: false,
+
+        // nil
+        // CountError: func(errType string) {
+            /*
+                Use configure
+                UnImplemented for this case
+            */
+        // },
     }
 }
