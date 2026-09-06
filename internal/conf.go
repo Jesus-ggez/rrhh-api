@@ -1,13 +1,17 @@
 package internal
 
 import (
+    "context"
     "database/sql"
     "log"
     "net/http"
     "os"
+    "os/signal"
+    "syscall"
+    "time"
 
-    "Jesus-ggez/rrhh-api/internal/servo"
     "Jesus-ggez/rrhh-api/internal/data"
+    "Jesus-ggez/rrhh-api/internal/servo"
 
     "github.com/joho/godotenv"
 )
@@ -39,4 +43,29 @@ func InitAppConfig() {
     var err error
     POOL, err = data.NewPool(DATABASE_AUTH_TOKEN, DATABASE_URL)
     if err != nil { log.Panic("Error building main connection pool") }
+}
+
+
+func RunServo() {
+    go func() {
+        log.Printf("Serve started at port `:%s`", PORT)
+        if err := SERVO.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+            log.Fatalf("Error: %v", err)
+        }
+    }()
+
+
+    quit := make(chan os.Signal, 1)
+    signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+    <-quit
+
+
+    log.Println("Closed serve ...")
+    ctx, cancel := context.WithTimeout(context.Background(), 30 * time.Second)
+    defer cancel()
+
+    if err := SERVO.Shutdown(ctx); err != nil {
+        log.Fatalf("Error to off servo: %v", err)
+    }
+    log.Println("Servo closed correctly")
 }
