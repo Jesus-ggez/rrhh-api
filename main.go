@@ -3,9 +3,10 @@ package main
 import "Jesus-ggez/rrhh-api/internal"
 
 func main() {
-    internal.InitAppConfig()
+    app := internal.App
 
-    defer internal.POOL.Close()
+    app.InitAppConfig()
+    defer app.Pool.Close()
 
-    internal.RunServo()
+    app.Run()
 }

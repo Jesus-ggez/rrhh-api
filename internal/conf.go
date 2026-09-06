@@ -16,47 +16,73 @@ import (
     "github.com/joho/godotenv"
 )
 
-var (
+type Application struct {
+    Servo               *http.Server
+    Pool                *sql.DB
+    Config              *AppConfig
+}
+
+type AppConfig struct {
     DATABASE_AUTH_TOKEN string
     DATABASE_URL        string
     PORT                string
-    POOL                *sql.DB
-    SERVO               *http.Server
-)
+    CERT                string
+    KEY                 string
+}
+var App = Application {}
 
-func InitAppConfig() {
+func (a *Application) InitAppConfig() {
     if err := godotenv.Load(); err != nil {
         log.Print("Error loading dotenv file: " + err.Error())
     }
 
-    DATABASE_AUTH_TOKEN = os.Getenv("DATABASE_AUTH_TOKEN")
-    if DATABASE_AUTH_TOKEN == "" {
+    conf := &AppConfig{}
+
+    conf.DATABASE_AUTH_TOKEN = os.Getenv("DATABASE_AUTH_TOKEN")
+    if conf.DATABASE_AUTH_TOKEN == "" {
         log.Panic("environ DATABASE_AUTH_TOKEN not loaded")
     }
 
-    DATABASE_URL = os.Getenv("DATABASE_URL")
-    if DATABASE_URL == "" {
+    conf.DATABASE_URL = os.Getenv("DATABASE_URL")
+    if conf.DATABASE_URL == "" {
         log.Panic("environ DATABASE_URL not loaded")
     }
 
-    PORT = os.Getenv("PORT")
-    if PORT == "" {
-        PORT = "3000"
+    conf.PORT = os.Getenv("PORT")
+    if conf.PORT == "" {
+        conf.PORT = "3000"
     }
 
-    SERVO = servo.NewServer(PORT)
+    conf.CERT = os.Getenv("CERT")
+    conf.KEY = os.Getenv("KEY")
+    if conf.CERT == "" || conf.KEY == "" {
+        log.Panic("environ CERTIFICATIONS not loaded\n",
+            "cert: " + conf.CERT + "\n",
+            "key: " + conf.KEY + "\n",
+        )
+    }
 
+    a.Config = conf
+
+    a.configureServo()
+    a.configurePool()
+}
+func (a *Application) configureServo() {
+    a.Servo = servo.NewServer(a.Config.PORT)
+}
+
+func (a *Application) configurePool() {
     var err error
-    POOL, err = data.NewPool(DATABASE_AUTH_TOKEN, DATABASE_URL)
+    a.Pool, err = data.NewPool(a.Config.DATABASE_AUTH_TOKEN, a.Config.DATABASE_URL)
     if err != nil {
         log.Panic("Error building main connection pool")
     }
 }
 
-func RunServo() {
+func (a *Application) Run() {
     go func() {
-        log.Printf("Serve started at port `:%s`", PORT)
-        if err := SERVO.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+        log.Printf("Serve started at port `:%s`", a.Config.PORT)
+        if err := a.Servo.ListenAndServeTLS(a.Config.CERT, a.Config.KEY); err != nil && err != http.ErrServerClosed {
             log.Fatalf("Error: %v", err)
         }
     }()
@@ -69,7 +95,7 @@ func RunServo() {
     ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
     defer cancel()
 
-    if err := SERVO.Shutdown(ctx); err != nil {
+    if err := a.Servo.Shutdown(ctx); err != nil {
         log.Fatalf("Error to off servo: %v", err)
     }
     log.Println("Servo closed correctly")
