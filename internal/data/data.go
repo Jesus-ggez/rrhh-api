@@ -28,6 +28,7 @@ func NewPool(token, url string) (*sql.DB, error) {
     log.Printf("Database pool connected successfully\n%s", p.Stats())
     return p, nil
 }
+
 /*
 // i use only this
 func Open(driverName, dataSourceName string) (*DB, error)
@@ -58,4 +59,3 @@ func (db *DB) QueryContext(ctx context.Context, query string, args ...any) (*Row
 func (db *DB) QueryRow(query string, args ...any) *Row
 func (db *DB) QueryRowContext(ctx context.Context, query string, args ...any) *Row
 */
-

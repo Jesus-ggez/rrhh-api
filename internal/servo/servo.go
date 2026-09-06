@@ -11,7 +11,7 @@ import (
     "time"
 )
 
-func NewServer(port string) * http.Server{
+func NewServer(port string) *http.Server {
     mux := http.NewServeMux()
 
     sv := &http.Server{

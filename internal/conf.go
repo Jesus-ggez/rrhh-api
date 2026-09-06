@@ -30,21 +30,28 @@ func InitAppConfig() {
     }
 
     DATABASE_AUTH_TOKEN = os.Getenv("DATABASE_AUTH_TOKEN")
-    if DATABASE_AUTH_TOKEN == "" { log.Panic("environ DATABASE_AUTH_TOKEN not loaded") }
+    if DATABASE_AUTH_TOKEN == "" {
+        log.Panic("environ DATABASE_AUTH_TOKEN not loaded")
+    }
 
     DATABASE_URL = os.Getenv("DATABASE_URL")
-    if DATABASE_URL == "" { log.Panic("environ DATABASE_URL not loaded") }
+    if DATABASE_URL == "" {
+        log.Panic("environ DATABASE_URL not loaded")
+    }
 
     PORT = os.Getenv("PORT")
-    if PORT == "" { PORT = "3000" }
+    if PORT == "" {
+        PORT = "3000"
+    }
 
     SERVO = servo.NewServer(PORT)
 
     var err error
     POOL, err = data.NewPool(DATABASE_AUTH_TOKEN, DATABASE_URL)
-    if err != nil { log.Panic("Error building main connection pool") }
+    if err != nil {
+        log.Panic("Error building main connection pool")
+    }
 }
-
 
 func RunServo() {
     go func() {
@@ -54,14 +61,12 @@ func RunServo() {
         }
     }()
 
-
     quit := make(chan os.Signal, 1)
     signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
     <-quit
 
-
     log.Println("Closed serve ...")
-    ctx, cancel := context.WithTimeout(context.Background(), 30 * time.Second)
+    ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
     defer cancel()
 
     if err := SERVO.Shutdown(ctx); err != nil {
